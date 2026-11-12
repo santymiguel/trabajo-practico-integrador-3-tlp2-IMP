@@ -1,10 +1,10 @@
 import { Router } from "express";
-import { register } from "../controller/controllerAutenticacion/controllerPostRegister.js";
-import { login } from "../controller/controllerAutenticacion/controllerPostLogin.js";
-import { authMiddleware } from "../middlewares/authMiddleware.js";
-import { getProfile } from "../controller/controllerAutenticacion/controllerGetProfile.js";
-import { updateProfile } from "../controller/controllerAutenticacion/controllerPutProfile.js";
-import { logout } from "../controller/controllerAutenticacion/controllerPostLogout.js";
+import { register } from "../controller/controllerAutenticacion/controller.postRegister.js";
+import { login } from "../controller/controllerAutenticacion/controller.postLogin.js";
+import { authMiddleware } from "../middlewares/auth.middleware.js";
+import { getProfile } from "../controller/controllerAutenticacion/controller.getProfile.js";
+import { updateProfile } from "../controller/controllerAutenticacion/controller.putProfile.js";
+import { logout } from "../controller/controllerAutenticacion/controller.postLogout.js";
 import {
   validationLogin,
   validationPutProfile,

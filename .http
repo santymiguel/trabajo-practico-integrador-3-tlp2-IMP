@@ -1,50 +1,72 @@
-@url = http://localhost:3000/api/categories
+### Register
 
-### 1. POST - Categoría válida
-# Debe crear la categoría correctamente.
-
-POST {{url}}
+POST http://localhost:3000/api/auth/register
 Content-Type: application/json
 
 {
-  "name": "Fútbol",
-  "description": "Categoría de eventos deportivos"
+  "username": "santiago123",
+  "email": "santiago@gmail.com",
+  "password": "Santiago123",
+  "profile": {
+    "firstName": "Santiago",
+    "lastName": "Ramirez",
+    "birthDate": "2005-06-15",
+    "phone": "3704123456"
+  }
 }
 
-### 2. POST - Campos inválidos
-# Debe rechazar:
-# - name vacío
-# - description superior a 200 caracteres
+### Login
 
-POST {{url}}
+POST http://localhost:3000/api/auth/login
 Content-Type: application/json
 
 {
-  "name": " ",
-  "description": "Esta descripción es demasiado larga para la validación establecida. Esta descripción es demasiado larga para la validación establecida. Esta descripción es demasiado larga para la validación establecida. Esta descripción es demasiado larga para la validación establecida."
+  "username": "santiago123",
+  "password": "Santiago123"
 }
 
-### 3. POST - Nombre duplicado
-# Primero ejecutá la consulta 1.
-# Debe rechazar el nombre porque ya existe.
 
-POST {{url}}
+### GetEvents// a mirar respuesta/devuelve la password
+
+GET  http://localhost:3000/api/events
+
+
+### PostEvent
+POST http://localhost:3000/api/events
 Content-Type: application/json
 
 {
-  "name": "Fútbol",
-  "description": "Otra descripción para probar la unicidad"
+   
+  "title": "Conferencia de Desarrollo Web 2026",
+  "description": "Este es un evento de prueba con más de veinte caracteres para cumplir con la longitud mínima requerida.",
+  "startDate": "2026-12-01T10:00:00.000Z",
+  "endDate": "2026-12-01T18:00:00.000Z",
+  "capacity": 100,
+  "price": 25.50,
+  "status": "scheduled",
+  "location": {
+    "venue": "Centro de Convenciones",
+    "address": "Av. Siempre Viva 123",
+    "city": "Springfield"
+  }
 }
 
-### 4. POST - Límites extremos
-# name tiene exactamente 2 caracteres.
-# description está vacía.
-# Debe aceptarse si description es opcional.
-
-POST {{url}}
+### PutEvent
+POST http://localhost:3000/api/events/
 Content-Type: application/json
 
 {
-  "name": "AB",
-  "description": ""
+   
+  "title": "Conferencia de Desarrollo Web 2026",
+  "description": "Este es un evento de prueba con más de veinte caracteres para cumplir con la longitud mínima requerida.",
+  "startDate": "2026-12-01T10:00:00.000Z",
+  "endDate": "2026-12-01T18:00:00.000Z",
+  "capacity": 100,
+  "price": 25.50,
+  "status": "scheduled",
+  "location": {
+    "venue": "Centro de Convenciones",
+    "address": "Av. Siempre Viva 123",
+    "city": "Springfield"
+  }
 }

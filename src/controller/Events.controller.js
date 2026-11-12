@@ -1,6 +1,6 @@
 import { matchedData } from "express-validator";
-import { EventModel } from "../models/EventModel.js";
-import { CategoryModel } from "../models/CategoryModel.js";
+import { EventModel } from "../models/event.model.js";
+import { CategoryModel } from "../models/category.model.js";
 
 export const postEvent = async (req, res) => {
   try {
@@ -40,6 +40,7 @@ export const postEvent = async (req, res) => {
       body: event,
     });
   } catch (err) {
+    console.log(err);
     return res.status(500).json({
       ok: false,
       message: "Error al crear el evento",
@@ -98,16 +99,77 @@ export const getEventById = async (req, res) => {
 export const putEvent = async (req, res) => {
   try {
     const id = req.params.id;
+
     const data = matchedData(req, { locations: ["body"] });
-    const newEvent = await EventModel.findByIdAndUpdate(
-      { _id: id },
-      { ...data },
-      { new: true, runValidators: true },
-    );
+
+    const { categories, ...eventData } = data;
+    const update = { ...eventData };
+
+    // Verificar que las categorías existan y que no haya duplicados
+    if (categories !== undefined) {
+      const uniqueCategories = [
+        ...new Map(categories.map((id) => [id.toString(), id])).values(),
+      ];
+      if (uniqueCategories.length > 0) {
+        const categoriesCount = await CategoryModel.countDocuments({
+          _id: { $in: uniqueCategories },
+        });
+
+        if (categoriesCount !== uniqueCategories.length) {
+          return res.status(400).json({
+            ok: false,
+            message: "Una o más categorías no existen",
+          });
+        }
+      }
+      update.categories = uniqueCategories;
+    }
+
+    // Crear el evento
+    const event = await EventModel.findByIdAndUpdate(id, update, {
+      new: true,
+      runValidators: true,
+    }).populate("categories");
+
+    return res.status(200).json({
+      ok: true,
+      message: "Evento actualizado correctamente",
+      body: event,
+    });
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({
+      ok: false,
+      message: "Error al querer actualizar el evento",
+    });
+  }
+};
+export const deleteEvent = async (req, res) => {
+  try {
+    const id = req.params.id;
+
+    const event = await EventModel.findOne({
+      _id: id,
+      deletedAt: null,
+    });
+
+    if (!event) {
+      return res.status(404).json({
+        ok: false,
+        message: "Evento no encontrado",
+      });
+    }
+
+    await EventModel.findByIdAndDelete(id);
+
+    return res.status(200).json({
+      ok: true,
+      message: "Evento eliminado correctamente",
+    });
   } catch (err) {
     return res.status(500).json({
       ok: false,
-      message: "Error al buscar los eventos",
+      message: "Error al eliminar el evento",
     });
   }
 };

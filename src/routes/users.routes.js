@@ -1,12 +1,12 @@
 import { Router } from "express";
-import { authMiddleware } from "../middlewares/authMiddleware.js";
-import { adminMiddleware } from "../middlewares/adminMiddleware.js";
+import { authMiddleware } from "../middlewares/auth.middleware.js";
+import { adminMiddleware } from "../middlewares/admin.middleware.js";
 import {
   deleteUser,
   getUserById,
   getUsers,
   updateUser,
-} from "../controller/Users.controller.js";
+} from "../controller/users.controller.js";
 import {
   validationDeleteUser,
   validationGetUser,

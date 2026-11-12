@@ -1,7 +1,13 @@
-import { EventModel } from "../models/EventModel";
+import { EventModel } from "../models/event.model.js";
 
 export const adminOrOwnerMiddleware = async (req, res, next) => {
   try {
+    if (!mongoose.isValidObjectId(req.params.id)) {
+      return res.status(400).json({
+        ok: false,
+        message: "El ID del evento no es válido",
+      });
+    }
     const evento = await EventModel.findById(req.params.id);
     if (!evento) {
       return res.status(404).json({

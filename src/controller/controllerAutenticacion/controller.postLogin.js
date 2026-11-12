@@ -1,7 +1,7 @@
 import { matchedData } from "express-validator";
 import { comparePassword } from "../../helpers/bcrypt.helper.js";
 import { generateToken } from "../../helpers/jwt.helper.js";
-import { UserModel } from "../../models/UserModel.js";
+import { UserModel } from "../../models/user.model.js";
 
 export const login = async (req, res) => {
   try {

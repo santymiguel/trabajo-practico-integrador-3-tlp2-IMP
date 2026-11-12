@@ -18,7 +18,7 @@ app.use(cookieParser()); //para poder leer las cookies
 // rutas
 app.use("/api/users", usersRouter);
 app.use("/api/auth", authRouter);
-app.use("/api", eventRouter);
+app.use("/api/events", eventRouter);
 
 app.listen(PORT, async () => {
   await connectDB();

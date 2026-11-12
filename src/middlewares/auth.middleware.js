@@ -1,3 +1,5 @@
+import { verifyToken } from "../helpers/jwt.helper.js";
+
 export const authMiddleware = (req, res, next) => {
   try {
     // Obtener token de la cookie
@@ -10,7 +12,8 @@ export const authMiddleware = (req, res, next) => {
     // Almacenar datos del usuario
     req.user = decoded;
     next();
-  } catch (error) {
+  } catch (err) {
+    console.log(err);
     res.status(500).json({ message: "Error interno del servidor" });
   }
 };
