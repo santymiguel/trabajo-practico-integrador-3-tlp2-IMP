@@ -1,4 +1,5 @@
 import { EventModel } from "../models/event.model.js";
+import mongoose from "mongoose";
 
 export const adminOrOwnerMiddleware = async (req, res, next) => {
   try {

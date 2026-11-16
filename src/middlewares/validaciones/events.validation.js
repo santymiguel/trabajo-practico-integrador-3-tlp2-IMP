@@ -212,31 +212,38 @@ export const validationPutEvent = [
     .optional()
     .isObject()
     .withMessage("La ubicación debe ser un objeto")
-    .bail(),
-  body("location.venue")
-    .if(body("location").exists())
-    .trim()
-    .notEmpty()
-    .withMessage("El lugar es obligatorio")
     .bail()
-    .isLength({ min: 3, max: 100 })
-    .withMessage("El lugar debe tener entre 3 y 100 caracteres"),
+    .custom((location) => {
+      if (
+        typeof location.venue !== "string" ||
+        location.venue.trim().length < 3 ||
+        location.venue.trim().length > 100
+      ) {
+        throw new Error("El lugar debe tener entre 3 y 100 caracteres");
+      }
 
-  body("location.address")
-    .if(body("location").exists())
-    .trim()
-    .notEmpty()
-    .withMessage("La dirección es obligatoria")
-    .bail()
-    .isLength({ min: 5, max: 150 })
-    .withMessage("La dirección debe tener entre 5 y 150 caracteres"),
+      if (
+        typeof location.address !== "string" ||
+        location.address.trim().length < 5 ||
+        location.address.trim().length > 150
+      ) {
+        throw new Error("La dirección debe tener entre 5 y 150 caracteres");
+      }
 
-  body("location.city")
-    .if(body("location").exists())
-    .trim()
-    .notEmpty()
-    .withMessage("La ciudad es obligatoria")
-    .bail()
-    .isLength({ min: 2, max: 50 })
-    .withMessage("La ciudad debe tener entre 2 y 50 caracteres"),
+      if (
+        typeof location.city !== "string" ||
+        location.city.trim().length < 2 ||
+        location.city.trim().length > 50
+      ) {
+        throw new Error("La ciudad debe tener entre 2 y 50 caracteres");
+      }
+
+      return true;
+    }),
+];
+
+export const idValidation = [
+  param("id")
+    .isMongoId()
+    .withMessage("El ID del evento no tiene un formato válido"),
 ];

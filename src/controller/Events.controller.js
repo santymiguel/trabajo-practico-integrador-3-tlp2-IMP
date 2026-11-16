@@ -7,21 +7,25 @@ export const postEvent = async (req, res) => {
     const data = matchedData(req, { locations: ["body"] });
 
     const { categories = [], ...eventData } = data;
+    const uniqueCategories = [];
 
     // Verificar que las categorías existan
-    const uniqueCategories = [
-      ...new Map(categories.map((id) => [id.toString(), id])).values(),
-    ];
-    if (uniqueCategories.length > 0) {
-      const categoriesCount = await CategoryModel.countDocuments({
-        _id: { $in: uniqueCategories },
-      });
 
-      if (categoriesCount !== uniqueCategories.length) {
-        return res.status(400).json({
-          ok: false,
-          message: "Una o más categorías no existen",
+    if (categories.length > 0) {
+      uniqueCategories = [
+        ...new Map(categories.map((id) => [id.toString(), id])).values(),
+      ];
+      if (uniqueCategories.length > 0) {
+        const categoriesCount = await CategoryModel.countDocuments({
+          _id: { $in: uniqueCategories },
         });
+
+        if (categoriesCount !== uniqueCategories.length) {
+          return res.status(400).json({
+            ok: false,
+            message: "Una o más categorías no existen",
+          });
+        }
       }
     }
 
@@ -101,14 +105,17 @@ export const putEvent = async (req, res) => {
     const id = req.params.id;
 
     const data = matchedData(req, { locations: ["body"] });
+    const event = await EventModel.findById(id);
+    const { categories = [], ...eventData } = data;
 
-    const { categories, ...eventData } = data;
-    const update = { ...eventData };
+    event.set(eventData);
 
-    // Verificar que las categorías existan y que no haya duplicados
-    if (categories !== undefined) {
+    if (categories.length > 0) {
+      let allCategories = [...event.categories, ...categories];
+
+      // Verificar que las categorías existan y que no haya duplicados
       const uniqueCategories = [
-        ...new Map(categories.map((id) => [id.toString(), id])).values(),
+        ...new Map(allCategories.map((id) => [id.toString(), id])).values(),
       ];
       if (uniqueCategories.length > 0) {
         const categoriesCount = await CategoryModel.countDocuments({
@@ -122,14 +129,12 @@ export const putEvent = async (req, res) => {
           });
         }
       }
-      update.categories = uniqueCategories;
+      event.categories = uniqueCategories;
     }
 
     // Crear el evento
-    const event = await EventModel.findByIdAndUpdate(id, update, {
-      new: true,
-      runValidators: true,
-    }).populate("categories");
+    await event.save();
+    await event.populate("categories");
 
     return res.status(200).json({
       ok: true,
@@ -144,6 +149,7 @@ export const putEvent = async (req, res) => {
     });
   }
 };
+
 export const deleteEvent = async (req, res) => {
   try {
     const id = req.params.id;
